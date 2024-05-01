@@ -3,23 +3,44 @@ using EmployeeManagement.Business.EventArguments;
 using EmployeeManagement.Business.Exceptions;
 using EmployeeManagement.DataAccess.Entities;
 using EmployeeManagement.Services.Test;
+using EmployeeManagement.Test.Fixtures;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace EmployeeManagement.test
 {
-    public class EmployeeServiceTests
+    [Collection("EmployeeServiceCollection")]
+    public class EmployeeServiceTests //: IClassFixture<EmployeeServiceFixture>
     {
+
+        private readonly EmployeeServiceFixture _employeeServiceFixture;
+        private readonly ITestOutputHelper _testOutputHelper;
+
+        public EmployeeServiceTests(EmployeeServiceFixture employeeServiceFixture,
+            ITestOutputHelper testOutputHelper)
+        {
+            _employeeServiceFixture = employeeServiceFixture;
+            _testOutputHelper = testOutputHelper;
+        }
+
         [Fact]
         public void CreateInternalEmployee_InternalEmployeeCreated_MustHaveAttendedFirstObligatoryCourse_WithObject()
         {
-            // Arrange            
-            var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
-            var employeeService = new EmployeeService(employeeManagementTestDataRepository, new EmployeeFactory());
-            var obligatoryCourse = employeeManagementTestDataRepository.GetCourse(Guid.Parse("37e03ca7-c730-4351-834c-b66f280cdb01"));
+            // Arrange          
+            var obligatoryCourse = _employeeServiceFixture
+                .EmployeeManagementTestDataRepository
+                .GetCourse(Guid.Parse("37e03ca7-c730-4351-834c-b66f280cdb01"));
 
             // Act
-            var internalEmployee = employeeService.CreateInternalEmployee("Brooklyn", "Cannon");
+            var internalEmployee = _employeeServiceFixture
+                .EmployeeService
+                .CreateInternalEmployee("Brooklyn", "Cannon");
+
+            _testOutputHelper.WriteLine($"Employee after Act: " +
+                $"{internalEmployee.FirstName} {internalEmployee.LastName}");
+            internalEmployee.AttendedCourses
+                .ForEach(c => _testOutputHelper.WriteLine($"Attended course: {c.Id} {c.Title}"));
 
             // Assert
             Assert.Contains(obligatoryCourse, internalEmployee.AttendedCourses);
@@ -61,7 +82,7 @@ namespace EmployeeManagement.test
             // Arrange 
             var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
             var employeeService = new EmployeeService(employeeManagementTestDataRepository, new EmployeeFactory());
-            var obligatoryCourses = employeeService.GetCourses( // He tenido que incluir de alguna forma el método GetCourses, así que este me sale error
+            var obligatoryCourses = employeeService.GetCourses( 
                     Guid.Parse("37e03ca7-c730-4351-834c-b66f280cdb01"),
                     Guid.Parse("1fd115cf-f44c-4982-86bc-a8fe2e4ff83e"));
 
