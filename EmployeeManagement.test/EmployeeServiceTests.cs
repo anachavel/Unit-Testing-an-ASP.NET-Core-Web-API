@@ -108,5 +108,56 @@ namespace EmployeeManagement.test
             // Assert
             Assert.Equal(obligatoryCourses, internalEmployee.AttendedCourses);
         }
+
+        [Fact]
+        public async Task GiveRaise_RaiseBelowMinimumGiven_EmployeeInvalidRaiseExceptionMustBeThrown()
+        {
+            // Arrange  
+            var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
+            var employeeService = new EmployeeService(employeeManagementTestDataRepository, new EmployeeFactory());
+            var internalEmployee = new InternalEmployee(
+                "Brooklyn", "Cannon", 5, 3000, false, 1);
+
+            // Act & Assert
+            await Assert.ThrowsAsync<EmployeeInvalidRaiseException>(
+                async () =>
+                await employeeService.GiveRaiseAsync(internalEmployee, 50)
+                );
+
+        }
+
+        //[Fact]
+        //public void GiveRaise_RaiseBelowMinimumGiven_EmployeeInvalidRaiseExceptionMustBeThrown_Mistake()
+        //{
+        //    // Arrange 
+        //    var employeeService = new EmployeeService(
+        //        new EmployeeManagementTestDataRepository(),
+        //        new EmployeeFactory());
+        //    var internalEmployee = new InternalEmployee(
+        //        "Brooklyn", "Cannon", 5, 3000, false, 1);
+
+        //    // Act & Assert
+        //    Assert.ThrowsAsync<EmployeeInvalidRaiseException>(
+        //        async () =>
+        //        await employeeService.GiveRaiseAsync(internalEmployee, 50)
+        //        );
+
+        //}
+
+        [Fact]
+        public void NotifyOfAbsence_EmployeeIsAbsent_OnEmployeeIsAbsentMustBeTriggered()
+        {
+            // Arrange 
+            var employeeManagementTestDataRepository = new EmployeeManagementTestDataRepository();
+            var employeeService = new EmployeeService(employeeManagementTestDataRepository, new EmployeeFactory());
+            var internalEmployee = new InternalEmployee(
+                "Brooklyn", "Cannon", 5, 3000, false, 1);
+
+            // Act & Assert
+            Assert.Raises<EmployeeIsAbsentEventArgs>(
+               handler => employeeService.EmployeeIsAbsent += handler,
+               handler => employeeService.EmployeeIsAbsent -= handler,
+               () => employeeService.NotifyOfAbsence(internalEmployee));
+        }
     }
 }
