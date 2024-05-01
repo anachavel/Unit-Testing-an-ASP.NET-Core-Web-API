@@ -216,5 +216,10 @@ namespace EmployeeManagement.Business
                     * employee.AttendedCourses.Count * 100;
             }
         }
+
+        public IEnumerable<object> GetCourses(Guid guid1, Guid guid2)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
