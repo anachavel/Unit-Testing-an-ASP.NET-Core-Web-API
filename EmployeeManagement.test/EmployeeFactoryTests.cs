@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-using EmployeeManagement.Business;
+﻿using EmployeeManagement.Business;
 using EmployeeManagement.DataAccess.Entities;
+using Xunit;
 
-
-namespace EmployeeManagement.test
+namespace EmployeeManagement.Test
 {
+    [Collection("No parallelism")]
     public class EmployeeFactoryTests : IDisposable
     {
         private EmployeeFactory _employeeFactory;
@@ -24,15 +19,16 @@ namespace EmployeeManagement.test
             // clean up the setup code, if required
         }
 
-        [Fact(Skip = "Skipping this one for demo reasons.")] // Lo marco con el atributo "Fact". Significa que es un unit test method. El "skip" es para no tenerlo en cuenta durante la comprobación de los tests.
+
+        [Fact(Skip = "Skipping this one for demo reasons.")]
         [Trait("Category", "EmployeeFactory_CreateEmployee_Salary")]
-        public void CreateEmployee_constructInternalEmployee_SalaryMustBe2500()
+        public void CreateEmployee_ConstructInternalEmployee_SalaryMustBe2500()
         {
 
-            var employee = (InternalEmployee)_employeeFactory.CreateEmployee("Kevin", "Dockx");
+            var employee = (InternalEmployee)_employeeFactory
+                .CreateEmployee("Kevin", "Dockx");
 
             Assert.Equal(2500, employee.Salary);
-            /* NOTA: pueda haber más de un assert en un test, pero lo suyo es que haya solo uno*/
         }
 
         [Fact]
@@ -42,7 +38,8 @@ namespace EmployeeManagement.test
             // Arrange 
 
             // Act
-            var employee = (InternalEmployee)_employeeFactory.CreateEmployee("Kevin", "Dockx") as InternalEmployee;
+            var employee = (InternalEmployee)_employeeFactory
+                .CreateEmployee("Kevin", "Dockx");
 
             // Assert
             Assert.True(employee.Salary >= 3000 && employee.Salary <= 3500,
@@ -56,7 +53,8 @@ namespace EmployeeManagement.test
             // Arrange 
 
             // Act
-            var employee = (InternalEmployee)_employeeFactory.CreateEmployee("Kevin", "Dockx");
+            var employee = (InternalEmployee)_employeeFactory
+                .CreateEmployee("Kevin", "Dockx");
 
             // Assert
             Assert.True(employee.Salary >= 2500);
@@ -70,7 +68,8 @@ namespace EmployeeManagement.test
             // Arrange 
 
             // Act
-            var employee = (InternalEmployee)_employeeFactory.CreateEmployee("Kevin", "Dockx");
+            var employee = (InternalEmployee)_employeeFactory
+                .CreateEmployee("Kevin", "Dockx");
 
             // Assert
             Assert.InRange(employee.Salary, 2500, 3500);
@@ -91,20 +90,26 @@ namespace EmployeeManagement.test
             Assert.Equal(2500, employee.Salary, 0);
         }
 
-        [Trait("Category", "EmployeeFactory_CreateEmployee_ReturnType")]
         [Fact]
+        [Trait("Category", "EmployeeFactory_CreateEmployee_ReturnType")]
         public void CreateEmployee_IsExternalIsTrue_ReturnTypeMustBeExternalEmployee()
         {
             // Arrange 
 
             // Act
-            var employee = _employeeFactory.CreateEmployee("Kevin", "Dockx", "Marvin", true);
+            var employee = _employeeFactory
+                .CreateEmployee("Kevin", "Dockx", "Marvin", true);
 
             // Assert
             Assert.IsType<ExternalEmployee>(employee);
             //Assert.IsAssignableFrom<Employee>(employee);
         }
 
-
+        [Fact]
+        public void SlowTest1()
+        {
+            Thread.Sleep(5000);
+            Assert.True(true);
+        }
     }
 }
